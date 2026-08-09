@@ -3,6 +3,8 @@
 A detailed graphics card comparison page. Pick up to four GPUs and compare them
 side by side across silicon, memory, performance, power and value.
 
+**Live site: https://gurunave.github.io/graphiccard/**
+
 No build step, no dependencies — plain HTML, CSS and JavaScript.
 
 ## Run it
@@ -16,6 +18,14 @@ python3 -m http.server 8000
 
 Because it is fully static it can be hosted as-is on GitHub Pages, Netlify,
 S3 or any static host.
+
+## Deployment
+
+`.github/workflows/pages.yml` publishes the repository root to GitHub Pages on
+every push to `main`, and can also be run manually from the Actions tab. There
+is no build step — the files are uploaded as-is. Pages is configured in
+"GitHub Actions" mode, so the workflow is the only thing that publishes; the
+branch-based Pages build no longer applies.
 
 ## Features
 
