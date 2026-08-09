@@ -46,6 +46,13 @@ branch-based Pages build no longer applies.
   efficient, most VRAM, lowest power.
 - **Presets** for common questions ("Blackwell vs Ada", "Budget builds",
   "Is it time to upgrade?").
+- **USD / INR pricing** — a currency switch in the header. USD shows the US
+  launch MSRP; INR shows the typical Indian street price, plus an availability
+  badge (widely available / limited / end of life) because a lot of older cards
+  are hard to find new in India. Rupee mode also switches every number and date
+  to the `en-IN` locale, so you get lakh grouping (₹2,89,000) and Indian date
+  order. It defaults to rupees for visitors in India and dollars elsewhere, and
+  remembers your choice.
 - **Shareable URLs** — the selection is stored as `?gpus=rtx-5080,rx-9070-xt`,
   and the Share button copies the current link.
 - Light/dark theme (follows the system setting, remembered per browser) and a
@@ -77,6 +84,15 @@ the launch price, not current street price.
 The performance numbers are an **approximate relative index** normalised so the
 RTX 4090 = 100, aggregated from published review results. They are intended for
 placing cards in tiers, not for predicting per-game frame rates.
+
+Indian prices (`inr`) are **hand-maintained ballpark street prices** including
+GST, for a mainstream partner card. They are deliberately not a conversion of
+the dollar MSRP — customs duty and GST put real Indian prices well above the
+converted figure, so converting would understate them badly. They also go stale:
+Indian GPU pricing moves with import duty, the rupee/dollar rate and stock, so
+treat them as a starting point and confirm with a retailer. Because value is
+computed from them, "best value" can legitimately differ between USD and INR
+mode — that is the point of having both.
 
 ## Layout
 

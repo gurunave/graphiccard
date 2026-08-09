@@ -5,6 +5,15 @@
  * manufacturer-published figures for the reference/Founders Edition card.
  * Board partner cards vary in clocks, power limit and physical size.
  *
+ * `msrp`  - US launch price in USD, as announced. Not a current street price.
+ * `inr`   - typical Indian street price in rupees for a mainstream partner
+ *           card, inclusive of GST. These are hand-maintained ballparks, not a
+ *           live feed: Indian pricing swings with import duty, the dollar rate
+ *           and stock, so re-check before buying. They are deliberately NOT a
+ *           conversion of `msrp` - duty and GST put real Indian prices well
+ *           above the converted MSRP.
+ * `indiaAvailability` - how easily the card is still found new in India.
+ *
  * The `perf` block is an APPROXIMATE relative performance index normalised so
  * that the RTX 4090 = 100. It is a rough aggregate of published review
  * benchmark suites, not a measurement. Treat it as "ballpark tier", not gospel.
@@ -22,6 +31,8 @@ const GPUS = [
     tier: "Flagship",
     released: "2025-01-30",
     msrp: 1999,
+    inr: 289000,
+    indiaAvailability: "Limited",
     architecture: "Blackwell",
     gpuChip: "GB202",
     process: "TSMC 4NP",
@@ -61,6 +72,8 @@ const GPUS = [
     tier: "High end",
     released: "2025-01-30",
     msrp: 999,
+    inr: 132000,
+    indiaAvailability: "Widely available",
     architecture: "Blackwell",
     gpuChip: "GB203",
     process: "TSMC 4NP",
@@ -100,6 +113,8 @@ const GPUS = [
     tier: "High end",
     released: "2025-02-20",
     msrp: 749,
+    inr: 96000,
+    indiaAvailability: "Widely available",
     architecture: "Blackwell",
     gpuChip: "GB203",
     process: "TSMC 4NP",
@@ -139,6 +154,8 @@ const GPUS = [
     tier: "Mid range",
     released: "2025-03-05",
     msrp: 549,
+    inr: 69500,
+    indiaAvailability: "Widely available",
     architecture: "Blackwell",
     gpuChip: "GB205",
     process: "TSMC 4NP",
@@ -178,6 +195,8 @@ const GPUS = [
     tier: "Mid range",
     released: "2025-04-16",
     msrp: 429,
+    inr: 48500,
+    indiaAvailability: "Widely available",
     architecture: "Blackwell",
     gpuChip: "GB206",
     process: "TSMC 4NP",
@@ -217,6 +236,8 @@ const GPUS = [
     tier: "Entry",
     released: "2025-05-19",
     msrp: 299,
+    inr: 34500,
+    indiaAvailability: "Widely available",
     architecture: "Blackwell",
     gpuChip: "GB206",
     process: "TSMC 4NP",
@@ -256,6 +277,8 @@ const GPUS = [
     tier: "Flagship",
     released: "2022-10-12",
     msrp: 1599,
+    inr: 235000,
+    indiaAvailability: "End of life",
     architecture: "Ada Lovelace",
     gpuChip: "AD102",
     process: "TSMC 4N",
@@ -295,6 +318,8 @@ const GPUS = [
     tier: "High end",
     released: "2024-01-31",
     msrp: 999,
+    inr: 124000,
+    indiaAvailability: "End of life",
     architecture: "Ada Lovelace",
     gpuChip: "AD103",
     process: "TSMC 4N",
@@ -334,6 +359,8 @@ const GPUS = [
     tier: "High end",
     released: "2024-01-24",
     msrp: 799,
+    inr: 94000,
+    indiaAvailability: "End of life",
     architecture: "Ada Lovelace",
     gpuChip: "AD103",
     process: "TSMC 4N",
@@ -373,6 +400,8 @@ const GPUS = [
     tier: "Mid range",
     released: "2024-01-17",
     msrp: 599,
+    inr: 68000,
+    indiaAvailability: "End of life",
     architecture: "Ada Lovelace",
     gpuChip: "AD104",
     process: "TSMC 4N",
@@ -412,6 +441,8 @@ const GPUS = [
     tier: "Mid range",
     released: "2023-04-13",
     msrp: 599,
+    inr: 61000,
+    indiaAvailability: "End of life",
     architecture: "Ada Lovelace",
     gpuChip: "AD104",
     process: "TSMC 4N",
@@ -451,6 +482,8 @@ const GPUS = [
     tier: "Entry",
     released: "2023-05-24",
     msrp: 399,
+    inr: 37500,
+    indiaAvailability: "Limited",
     architecture: "Ada Lovelace",
     gpuChip: "AD106",
     process: "TSMC 4N",
@@ -490,6 +523,8 @@ const GPUS = [
     tier: "Entry",
     released: "2023-06-29",
     msrp: 299,
+    inr: 27500,
+    indiaAvailability: "Widely available",
     architecture: "Ada Lovelace",
     gpuChip: "AD107",
     process: "TSMC 4N",
@@ -529,6 +564,8 @@ const GPUS = [
     tier: "Flagship",
     released: "2020-09-24",
     msrp: 1499,
+    inr: 145000,
+    indiaAvailability: "End of life",
     architecture: "Ampere",
     gpuChip: "GA102",
     process: "Samsung 8N",
@@ -568,6 +605,8 @@ const GPUS = [
     tier: "High end",
     released: "2020-09-17",
     msrp: 699,
+    inr: 82000,
+    indiaAvailability: "End of life",
     architecture: "Ampere",
     gpuChip: "GA102",
     process: "Samsung 8N",
@@ -607,6 +646,8 @@ const GPUS = [
     tier: "Mid range",
     released: "2020-10-29",
     msrp: 499,
+    inr: 50000,
+    indiaAvailability: "End of life",
     architecture: "Ampere",
     gpuChip: "GA104",
     process: "Samsung 8N",
@@ -646,6 +687,8 @@ const GPUS = [
     tier: "Entry",
     released: "2021-02-25",
     msrp: 329,
+    inr: 26500,
+    indiaAvailability: "Limited",
     architecture: "Ampere",
     gpuChip: "GA106",
     process: "Samsung 8N",
@@ -687,6 +730,8 @@ const GPUS = [
     tier: "High end",
     released: "2025-03-06",
     msrp: 599,
+    inr: 74500,
+    indiaAvailability: "Widely available",
     architecture: "RDNA 4",
     gpuChip: "Navi 48",
     process: "TSMC N4P",
@@ -726,6 +771,8 @@ const GPUS = [
     tier: "Mid range",
     released: "2025-03-06",
     msrp: 549,
+    inr: 65500,
+    indiaAvailability: "Widely available",
     architecture: "RDNA 4",
     gpuChip: "Navi 48",
     process: "TSMC N4P",
@@ -765,6 +812,8 @@ const GPUS = [
     tier: "Mid range",
     released: "2025-06-05",
     msrp: 349,
+    inr: 38500,
+    indiaAvailability: "Widely available",
     architecture: "RDNA 4",
     gpuChip: "Navi 44",
     process: "TSMC N4P",
@@ -804,6 +853,8 @@ const GPUS = [
     tier: "Flagship",
     released: "2022-12-13",
     msrp: 999,
+    inr: 89000,
+    indiaAvailability: "Limited",
     architecture: "RDNA 3",
     gpuChip: "Navi 31",
     process: "TSMC N5 + N6 (chiplet)",
@@ -843,6 +894,8 @@ const GPUS = [
     tier: "High end",
     released: "2022-12-13",
     msrp: 899,
+    inr: 73000,
+    indiaAvailability: "Limited",
     architecture: "RDNA 3",
     gpuChip: "Navi 31",
     process: "TSMC N5 + N6 (chiplet)",
@@ -882,6 +935,8 @@ const GPUS = [
     tier: "Mid range",
     released: "2023-09-06",
     msrp: 499,
+    inr: 48000,
+    indiaAvailability: "Limited",
     architecture: "RDNA 3",
     gpuChip: "Navi 32",
     process: "TSMC N5 + N6 (chiplet)",
@@ -921,6 +976,8 @@ const GPUS = [
     tier: "Mid range",
     released: "2023-09-06",
     msrp: 449,
+    inr: 41000,
+    indiaAvailability: "Limited",
     architecture: "RDNA 3",
     gpuChip: "Navi 32",
     process: "TSMC N5 + N6 (chiplet)",
@@ -960,6 +1017,8 @@ const GPUS = [
     tier: "Entry",
     released: "2023-05-25",
     msrp: 269,
+    inr: 23500,
+    indiaAvailability: "Widely available",
     architecture: "RDNA 3",
     gpuChip: "Navi 33",
     process: "TSMC N6",
@@ -1001,6 +1060,8 @@ const GPUS = [
     tier: "Entry",
     released: "2024-12-13",
     msrp: 249,
+    inr: 24500,
+    indiaAvailability: "Widely available",
     architecture: "Xe2 (Battlemage)",
     gpuChip: "BMG-G21",
     process: "TSMC N5",
@@ -1040,6 +1101,8 @@ const GPUS = [
     tier: "Entry",
     released: "2025-01-16",
     msrp: 219,
+    inr: 20500,
+    indiaAvailability: "Limited",
     architecture: "Xe2 (Battlemage)",
     gpuChip: "BMG-G21",
     process: "TSMC N5",
@@ -1079,6 +1142,8 @@ const GPUS = [
     tier: "Entry",
     released: "2022-10-12",
     msrp: 349,
+    inr: 29500,
+    indiaAvailability: "End of life",
     architecture: "Xe HPG (Alchemist)",
     gpuChip: "ACM-G10",
     process: "TSMC N6",
@@ -1118,6 +1183,7 @@ GPUS.forEach((g) => {
   g.tflops = +(g.shaders * 2 * g.boostClock / 1000).toFixed(1);
   // Value / efficiency indices, using the 1440p raster figure as the baseline.
   g.perfPerDollar = +(g.perf.raster1440 / g.msrp * 100).toFixed(2);
+  g.perfPerInr = +(g.perf.raster1440 / g.inr * 10000).toFixed(2);
   g.perfPerWatt = +(g.perf.raster1440 / g.tdp * 100).toFixed(1);
   g.year = +g.released.slice(0, 4);
 });
@@ -1136,7 +1202,18 @@ const SPEC_GROUPS = [
       { key: "generation", label: "Generation", better: null },
       { key: "tier", label: "Market tier", better: null },
       { key: "released", label: "Release date", better: null, format: "date" },
-      { key: "msrp", label: "Launch MSRP", better: "low", format: "usd" }
+      {
+        key: "price",
+        label: { usd: "Launch MSRP", inr: "India street price" },
+        better: "low",
+        format: "price"
+      },
+      {
+        key: "indiaAvailability",
+        label: "Availability in India",
+        better: null,
+        onlyWhen: "inr"
+      }
     ]
   },
   {
@@ -1179,7 +1256,12 @@ const SPEC_GROUPS = [
       { key: "perf.raster1440", label: "1440p raster", better: "high" },
       { key: "perf.raster2160", label: "4K raster", better: "high" },
       { key: "perf.rt1440", label: "1440p ray tracing", better: "high" },
-      { key: "perfPerDollar", label: "Performance per $100", better: "high" },
+      {
+        key: "perfPerMoney",
+        label: { usd: "Performance per $100", inr: "Performance per ₹10,000" },
+        better: "high",
+        format: "perfPerMoney"
+      },
       { key: "perfPerWatt", label: "Performance per 100 W", better: "high" }
     ]
   },

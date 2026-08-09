@@ -17,6 +17,10 @@
       <span>GPU<strong>Compare</strong></span>
     </a>
     <div class="topbar-actions">
+      <div class="segmented segmented-sm" id="currencyToggle" role="group" aria-label="Currency">
+        <button type="button" data-currency="usd" title="US launch MSRP">USD</button>
+        <button type="button" data-currency="inr" title="Typical India street price">INR</button>
+      </div>
       <button id="shareBtn" class="btn btn-ghost" type="button" title="Copy a link to this comparison">Share</button>
       <button id="themeBtn" class="btn btn-ghost" type="button" aria-label="Toggle colour theme">
         <span class="theme-icon" aria-hidden="true">◐</span>
@@ -70,14 +74,8 @@
         </select>
       </div>
       <div class="field">
-        <label for="priceFilter">Max MSRP</label>
-        <select id="priceFilter">
-          <option value="0">Any</option>
-          <option value="300">$300</option>
-          <option value="500">$500</option>
-          <option value="800">$800</option>
-          <option value="1200">$1200</option>
-        </select>
+        <label for="priceFilter" id="priceFilterLabel">Max MSRP</label>
+        <select id="priceFilter"><option value="0">Any</option></select>
       </div>
       <div class="field">
         <label for="sortBy">Sort by</label>
@@ -134,7 +132,7 @@
       <div class="panel-head"><h2>Value &amp; efficiency</h2></div>
       <div class="two-col">
         <div>
-          <h3 class="sub">Performance per $100 of MSRP</h3>
+          <h3 class="sub" id="valueHeading">Performance per $100 of MSRP</h3>
           <div class="charts" id="valueChart"></div>
         </div>
         <div>
@@ -155,10 +153,7 @@
       <div class="table-scroll">
         <table class="spec-table" id="specTable"></table>
       </div>
-      <p class="note">
-        Figures are for reference / Founders Edition boards. Partner cards vary in clocks,
-        power limit and dimensions. MSRP is the launch price, not current street price.
-      </p>
+      <p class="note" id="specNote"></p>
     </section>
 
   </div>
@@ -181,7 +176,7 @@
             <th data-sort="vram" class="num">VRAM</th>
             <th data-sort="bandwidth" class="num">Bandwidth</th>
             <th data-sort="tdp" class="num">TBP</th>
-            <th data-sort="msrp" class="num">MSRP</th>
+            <th data-sort="price" class="num" id="priceCol">MSRP</th>
             <th data-sort="perf" class="num">Perf (1440p)</th>
           </tr>
         </thead>

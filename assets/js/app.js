@@ -9,10 +9,52 @@
     selected: [],                 // array of gpu ids, in pick order
     metric: "raster1440",
     diffOnly: false,
+    currency: "usd",              // "usd" (launch MSRP) or "inr" (India street)
     filters: { q: "", brand: "", gen: "", vram: 0, price: 0 },
     sortBy: "perf",
     dbSort: { key: "perf", asc: false }
   };
+
+  /*
+   * Currency modes. USD shows the announced launch MSRP; INR shows the typical
+   * Indian street price, which is a separately maintained figure rather than a
+   * converted one. Each mode also carries the locale used for every number and
+   * date on the page, so INR mode gets lakh/crore digit grouping.
+   */
+  const MONEY = {
+    usd: {
+      locale: "en-US",
+      priceKey: "msrp",
+      valueKey: "perfPerDollar",
+      priceLabel: "MSRP",
+      valueHeading: "Performance per $100 of MSRP",
+      filterLabel: "Max MSRP",
+      columnLabel: "MSRP",
+      filterSteps: [[300, "$300"], [500, "$500"], [800, "$800"], [1200, "$1200"]],
+      format: (v) => "$" + v.toLocaleString("en-US"),
+      note: "Figures are for reference / Founders Edition boards. Partner cards vary in " +
+            "clocks, power limit and dimensions. MSRP is the launch price, not current " +
+            "street price."
+    },
+    inr: {
+      locale: "en-IN",
+      priceKey: "inr",
+      valueKey: "perfPerInr",
+      priceLabel: "street price",
+      valueHeading: "Performance per ₹10,000 spent",
+      filterLabel: "Max price",
+      columnLabel: "India price",
+      filterSteps: [[30000, "₹30k"], [50000, "₹50k"], [80000, "₹80k"], [130000, "₹1.3L"]],
+      format: (v) => "₹" + v.toLocaleString("en-IN"),
+      note: "Figures are for reference / Founders Edition boards. Partner cards vary in " +
+            "clocks, power limit and dimensions. Indian prices are approximate street " +
+            "prices including GST, hand-maintained rather than live — they move with " +
+            "import duty, the dollar rate and stock, so confirm with a retailer before " +
+            "buying."
+    }
+  };
+
+  const money = () => MONEY[state.currency];
 
   const byId = Object.fromEntries(GPUS.map((g) => [g.id, g]));
   const $ = (sel) => document.querySelector(sel);
@@ -25,12 +67,12 @@
 
   /* ------------------------------------------------------------ formatting */
   const fmt = {
-    usd: (v) => "$" + v.toLocaleString("en-US"),
+    price: (v) => money().format(v),
     date: (v) =>
-      new Date(v + "T00:00:00Z").toLocaleDateString("en-US", {
+      new Date(v + "T00:00:00Z").toLocaleDateString(money().locale, {
         year: "numeric", month: "short", day: "numeric", timeZone: "UTC"
       }),
-    num: (v) => (typeof v === "number" ? v.toLocaleString("en-US") : v)
+    num: (v) => (typeof v === "number" ? v.toLocaleString(money().locale) : v)
   };
 
   function pick(gpu, key) {
@@ -39,16 +81,31 @@
       : gpu[key];
   }
 
+  /* Price and value rows resolve against whichever currency is active. */
+  function rowValue(gpu, row) {
+    if (row.format === "price") return gpu[money().priceKey];
+    if (row.format === "perfPerMoney") return gpu[money().valueKey];
+    return pick(gpu, row.key);
+  }
+
+  function rowLabel(row) {
+    return typeof row.label === "string" ? row.label : row.label[state.currency];
+  }
+
   function cellText(gpu, row) {
-    const raw = pick(gpu, row.key);
+    const raw = rowValue(gpu, row);
     if (raw == null || raw === "") return "—";
-    if (row.format === "usd") return fmt.usd(raw);
+    if (row.format === "price") return fmt.price(raw);
     if (row.format === "date") return fmt.date(raw);
     if (row.format === "cu") return fmt.num(raw) + " " + gpu.cuLabel;
     if (row.format === "rt") return fmt.num(raw) + " (" + gpu.rtGen + ")";
     if (row.format === "tensor") return fmt.num(raw) + " (" + gpu.tensorGen + ")";
     return fmt.num(raw) + (row.unit || "");
   }
+
+  /* Convenience accessors for the active currency. */
+  const priceOf = (gpu) => gpu[money().priceKey];
+  const valueOf = (gpu) => gpu[money().valueKey];
 
   const colorOf = (id) => SERIES_COLORS[state.selected.indexOf(id)] || SERIES_COLORS[0];
 
@@ -103,7 +160,8 @@
       info.title = g.name;
       info.append(
         el("div", "slot-name", g.name),
-        el("div", "slot-meta", g.vram + " GB " + g.vramType + " · " + g.tdp + " W · " + fmt.usd(g.msrp))
+        el("div", "slot-meta",
+          g.vram + " GB " + g.vramType + " · " + g.tdp + " W · " + fmt.price(priceOf(g)))
       );
 
       const rm = el("button", "slot-remove", "×");
@@ -125,7 +183,7 @@
       if (f.brand && g.brand !== f.brand) return false;
       if (f.gen && g.generation !== f.gen) return false;
       if (f.vram && g.vram < f.vram) return false;
-      if (f.price && g.msrp > f.price) return false;
+      if (f.price && priceOf(g) > f.price) return false;
       if (!q) return true;
       return (g.name + " " + g.generation + " " + g.architecture + " " + g.gpuChip + " " + g.brand)
         .toLowerCase()
@@ -134,8 +192,8 @@
 
     const sorters = {
       perf: (a, b) => b.perf.raster1440 - a.perf.raster1440,
-      price: (a, b) => a.msrp - b.msrp,
-      value: (a, b) => b.perfPerDollar - a.perfPerDollar,
+      price: (a, b) => priceOf(a) - priceOf(b),
+      value: (a, b) => valueOf(b) - valueOf(a),
       efficiency: (a, b) => b.perfPerWatt - a.perfPerWatt,
       vram: (a, b) => b.vram - a.vram || b.perf.raster1440 - a.perf.raster1440,
       newest: (a, b) => b.released.localeCompare(a.released),
@@ -165,7 +223,10 @@
           g.vram + " GB " + g.vramType + " · " + fmt.num(g.shaders) + " shaders · " + g.tdp + " W"),
         (() => {
           const foot = el("div", "gpu-card-foot");
-          foot.append(el("span", null, fmt.usd(g.msrp)), el("span", null, "Index " + g.perf.raster1440));
+          foot.append(
+            el("span", null, fmt.price(priceOf(g))),
+            el("span", null, "Index " + g.perf.raster1440)
+          );
           return foot;
         })()
       );
@@ -184,8 +245,8 @@
       const c = el("div", "summary-card");
       c.style.setProperty("--card-color", SERIES_COLORS[i]);
 
-      const price = el("div", "summary-price", fmt.usd(g.msrp));
-      price.append(el("small", null, " MSRP"));
+      const price = el("div", "summary-price", fmt.price(priceOf(g)));
+      price.append(el("small", null, " " + money().priceLabel));
 
       const stats = el("div", "summary-stats");
       [
@@ -201,7 +262,13 @@
         stats.append(d);
       });
 
-      c.append(el("h3", null, g.name), el("div", "gen", g.generation), price, stats);
+      c.append(el("h3", null, g.name), el("div", "gen", g.generation), price);
+      if (state.currency === "inr") {
+        const avail = el("div", "availability " + g.indiaAvailability.split(" ")[0].toLowerCase(),
+          g.indiaAvailability + " in India");
+        c.append(avail);
+      }
+      c.append(stats);
       host.append(c);
     });
 
@@ -221,7 +288,7 @@
     [
       ["Fastest at 1440p", best((g) => g.perf.raster1440, "high")],
       ["Best ray tracing", best((g) => g.perf.rt1440, "high")],
-      ["Best value", best((g) => g.perfPerDollar, "high")],
+      ["Best value", best((g) => valueOf(g), "high")],
       ["Most efficient", best((g) => g.perfPerWatt, "high")],
       ["Most VRAM", best((g) => g.vram, "high")],
       ["Lowest power", best((g) => g.tdp, "low")]
@@ -269,8 +336,9 @@
   function renderCharts() {
     const cards = state.selected.map((id) => byId[id]);
     renderBars($("#perfChart"), cards, (g) => g.perf[state.metric], (v) => String(v));
-    renderBars($("#valueChart"), cards, (g) => g.perfPerDollar, (v) => v.toFixed(2));
+    renderBars($("#valueChart"), cards, (g) => valueOf(g), (v) => v.toFixed(2));
     renderBars($("#effChart"), cards, (g) => g.perfPerWatt, (v) => v.toFixed(1));
+    $("#valueHeading").textContent = money().valueHeading;
   }
 
   /* ------------------------------------------------------------ spec table */
@@ -297,8 +365,9 @@
     const tbody = el("tbody");
     SPEC_GROUPS.forEach((group) => {
       const rows = group.rows.filter((row) => {
+        if (row.onlyWhen && row.onlyWhen !== state.currency) return false;
         if (!state.diffOnly) return true;
-        const vals = cards.map((g) => String(pick(g, row.key)));
+        const vals = cards.map((g) => String(rowValue(g, row)));
         return new Set(vals).size > 1;
       });
       if (!rows.length) return;
@@ -311,9 +380,9 @@
 
       rows.forEach((row) => {
         const tr = el("tr");
-        tr.append(el("th", "spec-name", row.label));
+        tr.append(el("th", "spec-name", rowLabel(row)));
 
-        const nums = cards.map((g) => pick(g, row.key));
+        const nums = cards.map((g) => rowValue(g, row));
         const numeric = row.better && nums.every((v) => typeof v === "number");
         const target = numeric
           ? (row.better === "low" ? Math.min(...nums) : Math.max(...nums))
@@ -337,7 +406,11 @@
   function renderDbTable() {
     const tbody = $("#dbTable tbody");
     const { key, asc } = state.dbSort;
-    const get = (g) => (key === "perf" ? g.perf.raster1440 : g[key]);
+    const get = (g) => {
+      if (key === "perf") return g.perf.raster1440;
+      if (key === "price") return priceOf(g);
+      return g[key];
+    };
 
     const list = GPUS.slice().sort((a, b) => {
       const x = get(a), y = get(b);
@@ -363,7 +436,7 @@
         g.vram + " GB",
         g.bandwidth + " GB/s",
         g.tdp + " W",
-        fmt.usd(g.msrp),
+        fmt.price(priceOf(g)),
         String(g.perf.raster1440)
       ];
       tr.append(nameTd);
@@ -379,8 +452,32 @@
     });
   }
 
+  /*
+   * Chrome that changes wording or options with the currency: the price filter,
+   * the database column header and the footnote under the spec table.
+   */
+  function renderCurrencyChrome() {
+    const m = money();
+
+    $("#priceFilterLabel").textContent = m.filterLabel;
+    $("#priceCol").textContent = m.columnLabel;
+    $("#specNote").textContent = m.note;
+
+    const sel = $("#priceFilter");
+    sel.replaceChildren(new Option("Any", "0"));
+    m.filterSteps.forEach(([value, label]) => sel.append(new Option(label, String(value))));
+    // The previous ceiling is meaningless in the other currency, so reset it.
+    state.filters.price = 0;
+    sel.value = "0";
+
+    $("#currencyToggle").querySelectorAll("button").forEach((b) => {
+      b.classList.toggle("active", b.dataset.currency === state.currency);
+    });
+  }
+
   /* ---------------------------------------------------------------- render */
   function render() {
+    renderCurrencyChrome();
     renderSlots();
     renderLibrary();
     renderDbTable();
@@ -473,7 +570,7 @@
       th.addEventListener("click", () => {
         const key = th.dataset.sort;
         // Lower-is-better columns read better ascending on first click.
-        const ascFirst = ["name", "generation", "msrp", "tdp"];
+        const ascFirst = ["name", "generation", "price", "tdp"];
         if (state.dbSort.key === key) state.dbSort.asc = !state.dbSort.asc;
         else state.dbSort = { key, asc: ascFirst.includes(key) };
         renderDbTable();
@@ -490,11 +587,35 @@
       }
     });
 
+    $("#currencyToggle").addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-currency]");
+      if (!btn || btn.dataset.currency === state.currency) return;
+      state.currency = btn.dataset.currency;
+      try { localStorage.setItem("gpucompare-currency", state.currency); } catch { /* private mode */ }
+      render();
+    });
+
     $("#themeBtn").addEventListener("click", () => {
       const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
       document.documentElement.dataset.theme = next;
       try { localStorage.setItem("gpucompare-theme", next); } catch { /* private mode */ }
     });
+  }
+
+  /* Default to rupees for visitors in India, dollars elsewhere. */
+  function initCurrency() {
+    let saved = null;
+    try { saved = localStorage.getItem("gpucompare-currency"); } catch { /* private mode */ }
+    if (saved && MONEY[saved]) {
+      state.currency = saved;
+      return;
+    }
+    const langs = navigator.languages && navigator.languages.length
+      ? navigator.languages
+      : [navigator.language || ""];
+    const inIndia = langs.some((l) => /-IN\b/i.test(l)) ||
+      /(Kolkata|Calcutta)/.test(Intl.DateTimeFormat().resolvedOptions().timeZone || "");
+    state.currency = inIndia ? "inr" : "usd";
   }
 
   function initTheme() {
@@ -505,6 +626,7 @@
   }
 
   initTheme();
+  initCurrency();
   populateFilters();
   buildPresets();
   bindEvents();
