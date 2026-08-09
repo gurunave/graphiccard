@@ -16,13 +16,15 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
 
       # `enablement: true` turns Pages on for the repository if it is not
       # already enabled, so no manual setup is needed in repository settings.
@@ -31,12 +33,26 @@ jobs:
         with:
           enablement: true
 
-      # The site is plain static files at the repository root - nothing to build.
+      - name: Install dependencies
+        run: npm ci
+
+      # next.config.mjs sets output: "export", so this writes a static site to
+      # ./out with basePath /graphiccard to match the Pages project URL.
+      - name: Build static site
+        run: npm run build
+
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: ./out
 
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
