@@ -854,15 +854,57 @@ export const DERIVED_LAPTOPS: DerivedLaptop[] = LAPTOPS.map((l) => {
   };
 });
 
-export const LAPTOP_BRANDS: string[] = DERIVED_LAPTOPS.reduce<string[]>((acc, l) => {
-  if (!acc.includes(l.brand)) acc.push(l.brand);
-  return acc.sort();
-}, []);
+export const LAPTOP_BRANDS: string[] = [...new Set(DERIVED_LAPTOPS.map((l) => l.brand))].sort(
+  (a, b) => a.localeCompare(b),
+);
 
 /** Laptop GPUs that at least one listed machine ships, in performance order. */
 export const USED_LAPTOP_GPUS: LaptopGpu[] = LAPTOP_GPUS.filter((g) =>
   DERIVED_LAPTOPS.some((l) => l.gpuId === g.id),
 ).sort((a, b) => b.perfAtMaxTgp - a.perfAtMaxTgp);
+
+/** How far apart the listed machines carrying one GPU are, purely because of TGP. */
+export interface TgpSpread {
+  gpu: LaptopGpu;
+  machines: number;
+  lowestTgp: number;
+  highestTgp: number;
+  slowest: number;
+  fastest: number;
+  /** How much faster the best-powered machine is than the most limited one, in %. */
+  gap: number;
+}
+
+/**
+ * The same GPU name spread across the machines that ship it, widest gap first.
+ *
+ * This is the page's whole argument stated in numbers, so it is derived from
+ * the data rather than written into the copy — adding a machine at an unusual
+ * TGP updates the claim instead of quietly falsifying it.
+ */
+export const TGP_SPREADS: TgpSpread[] = USED_LAPTOP_GPUS.map((gpu) => {
+  const machines = DERIVED_LAPTOPS.filter((l) => l.gpuId === gpu.id);
+  const tgps = machines.map((l) => l.tgp);
+  const perfs = machines.map((l) => l.effectivePerf);
+  const slowest = Math.min(...perfs);
+  const fastest = Math.max(...perfs);
+  return {
+    gpu,
+    machines: machines.length,
+    lowestTgp: Math.min(...tgps),
+    highestTgp: Math.max(...tgps),
+    slowest,
+    fastest,
+    gap: Math.round((fastest / slowest - 1) * 100),
+  };
+}).sort((a, b) => b.gap - a.gap);
+
+export const TGP_SPREAD_BY_GPU: Record<string, TgpSpread> = Object.fromEntries(
+  TGP_SPREADS.map((s) => [s.gpu.id, s]),
+);
+
+/** The GPU whose machines vary most — the headline example of why TGP matters. */
+export const WIDEST_TGP_SPREAD: TgpSpread = TGP_SPREADS[0];
 
 export function laptopsForDesktopGpu(desktopId: string): DerivedLaptop[] {
   const families = LAPTOP_GPUS.filter((g) => g.desktopCousin === desktopId).map((g) => g.id);

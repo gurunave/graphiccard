@@ -116,12 +116,18 @@ a { color: var(--accent); }
   gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;
 }
 .panel-head h2 { font-size: 1.12rem; display: flex; align-items: baseline; gap: .6rem; }
-.panel-head-actions { display: flex; gap: .5rem; }
+.panel-head-actions { display: flex; align-items: center; gap: .75rem; }
+.panel-subhead {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; flex-wrap: wrap; margin: 1.5rem 0 .7rem;
+}
+.panel-subhead .sub { margin-bottom: 0; }
 .count { font-size: .8rem; font-weight: 500; color: var(--text-faint); }
 .sub { font-size: .9rem; font-weight: 600; color: var(--text-dim); margin-bottom: .75rem; }
 .note { color: var(--text-faint); font-size: .82rem; margin: .9rem 0 0; }
 .note.inline { margin: 0; }
 .empty { color: var(--text-faint); text-align: center; padding: 1.5rem 0; margin: 0; }
+.empty p { margin: 0 0 .8rem; }
 
 /* ==================================================================== home */
 .home-grid {
@@ -236,6 +242,7 @@ a { color: var(--accent); }
   border: 1px solid var(--border); border-top: 3px solid var(--card-color, var(--accent));
   border-radius: var(--radius-sm); padding: .9rem 1rem; background: var(--bg-sunken);
 }
+.summary-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: .5rem; }
 .summary-card h3 { font-size: .98rem; margin-bottom: .15rem; }
 .summary-card .gen { font-size: .78rem; color: var(--text-faint); }
 .summary-price { font-size: 1.4rem; font-weight: 650; margin: .55rem 0 .1rem; letter-spacing: -.02em; }
@@ -342,7 +349,15 @@ th, td { text-align: left; padding: .55rem .7rem; border-bottom: 1px solid var(-
 .laptop-top { display: flex; justify-content: space-between; gap: .75rem; align-items: flex-start; }
 .laptop-name { font-weight: 600; font-size: .97rem; }
 .laptop-brand { font-size: .76rem; color: var(--text-faint); }
-.laptop-price { font-size: 1.05rem; font-weight: 650; white-space: nowrap; letter-spacing: -.01em; }
+.laptop-price { font-size: 1.05rem; font-weight: 650; white-space: nowrap; letter-spacing: -.01em; text-align: right; }
+.laptop-price small { display: block; font-size: .72rem; font-weight: 500; color: var(--text-faint); letter-spacing: 0; }
+.laptop-badges { display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; }
+.badge {
+  font-size: .72rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+  padding: .15rem .5rem; border-radius: 999px;
+  background: var(--win-soft); color: var(--win);
+  border: 1px solid color-mix(in srgb, var(--win) 30%, transparent);
+}
 .laptop-gpu {
   display: flex; align-items: center; gap: .4rem;
   font-size: .84rem; color: var(--text-dim);
@@ -371,6 +386,14 @@ th, td { text-align: left; padding: .55rem .7rem; border-bottom: 1px solid var(-
   padding: .85rem 1rem; font-size: .87rem; color: var(--text-dim); margin-bottom: 1.25rem;
 }
 .callout b { color: var(--text); }
+
+/* The TGP range one GPU name covers across the machines in the database. */
+.spread {
+  border: 1px solid var(--border); border-left: 3px solid var(--warn);
+  background: var(--bg-sunken); border-radius: var(--radius-sm);
+  padding: .7rem .9rem; font-size: .84rem; color: var(--text-dim); margin-bottom: 1rem;
+}
+.spread b { color: var(--text); }
 
 /* ============================================================ gpu detail */
 .detail-head { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: flex-end; }

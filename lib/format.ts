@@ -17,6 +17,9 @@ export interface MoneyMode {
   priceLabel: string;
   valueHeading: string;
   valueShort: string;
+  /** Laptop value is quoted per a larger unit of money — machines cost more. */
+  laptopValueHeading: string;
+  laptopValueShort: string;
   filterLabel: string;
   columnLabel: string;
   gpuFilterSteps: [number, string][];
@@ -33,6 +36,8 @@ export const MONEY: Record<Currency, MoneyMode> = {
     priceLabel: "MSRP",
     valueHeading: "Performance per $100 of MSRP",
     valueShort: "per $100",
+    laptopValueHeading: "Performance per $1,000",
+    laptopValueShort: "per $1,000",
     filterLabel: "Max MSRP",
     columnLabel: "MSRP",
     gpuFilterSteps: [
@@ -60,6 +65,8 @@ export const MONEY: Record<Currency, MoneyMode> = {
     priceLabel: "street price",
     valueHeading: "Performance per ₹10,000 spent",
     valueShort: "per ₹10k",
+    laptopValueHeading: "Performance per ₹1,00,000",
+    laptopValueShort: "per ₹1L",
     filterLabel: "Max price",
     columnLabel: "India price",
     gpuFilterSteps: [

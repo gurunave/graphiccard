@@ -45,16 +45,30 @@ live in the URL (`?gpus=rtx-5080,rx-9070-xt`) so a comparison is shareable.
 ### Laptop finder
 
 Gaming laptops filtered by GPU, brand, price, weight, refresh rate and RAM, then
-shortlisted (up to four) into a side-by-side comparison with charts and a spec
-table. The shortlist persists in `localStorage` and in the URL (`?picks=...`).
+shortlisted (up to four) into a side-by-side comparison with verdict chips,
+charts and a spec table with "Only show differences". The shortlist persists in
+`localStorage` and in the URL (`?picks=...`).
 
 The point of this page is **TGP**. Laptop GPUs run within a power range set by
 the manufacturer, and the chassis decides where in that range a given machine
-sits — so two laptops with the same GPU name can differ by around 20%. Every
-result shows its TGP, how much of the GPU's rated power that is, and the
-resulting effective index, and results are ranked on that effective figure
-rather than on the badge. The RTX 4060 machines listed here span 65 W to 140 W,
-which is exactly the trap this is meant to expose.
+sits — so two laptops with the same GPU name can be 30% apart. Every result
+shows its TGP, how much of the GPU's rated power that is, and the resulting
+effective index, and results are ranked on that effective figure rather than on
+the badge. The RTX 4060 machines listed here span 65 W to 140 W, which is
+exactly the trap this is meant to expose.
+
+The size of that trap is computed, not written down: `TGP_SPREADS` in
+`lib/laptops.ts` measures how far apart the machines carrying each GPU are, the
+intro callout quotes the widest one, and filtering to a single GPU shows that
+card's own range. Adding a machine at an unusual TGP updates the claim instead
+of quietly falsifying it.
+
+Results carry the numbers they can be sorted on — price, performance per
+$1,000 / ₹1,00,000, TGP share — and the leaders of the current result set are
+badged (fastest, best value, lightest). Any active filter reveals a reset, which
+is also offered when a filter set matches nothing. Price caps are absolute
+amounts, so switching currency clears the cap rather than silently applying a
+dollar figure to rupees.
 
 ## Adding or editing data
 
@@ -69,7 +83,9 @@ which is exactly the trap this is meant to expose.
   `{ usd, inr }` to vary by currency; `onlyWhen` restricts a row to one currency.
 - `lib/laptops.ts` — `LAPTOP_GPUS` (mobile silicon and its TGP range) and
   `LAPTOPS` (machines, each with the TGP that model allows). A laptop GPU may
-  name a `desktopCousin` to cross-link the two databases.
+  name a `desktopCousin` to cross-link the two databases. `DERIVED_LAPTOPS` and
+  `TGP_SPREADS` are computed from both at load — nothing downstream needs
+  editing when a machine is added.
 
 ## About the data
 
